@@ -1,0 +1,1 @@
+ASP.NET MVC 5 Fundamentals covers all the new features of ASP.NET MVC 5, as well as the new features for web developers in Visual Studio 2013, including WebApi 2, OWIN, Katana, SignalR, and the Entity Framework version 6.
