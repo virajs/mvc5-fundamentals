@@ -20,7 +20,7 @@ namespace KatanaBasics
             string uri = "http://localhost:8080";
             using (WebApp.Start<Startup>(uri)) 
             {
-                Console.WriteLine("Your server is running at 8080");
+                Console.WriteLine("The server is running at 8080");
                 Console.ReadKey();
                 Console.WriteLine("The server now is not running");
             }
@@ -29,29 +29,43 @@ namespace KatanaBasics
 
     }
 
-    public class Startup { 
+    public class Startup
+    {
         public void Configuration(IAppBuilder app)
         {
-            app.Use<HelloWorldComponents>();
+            app.Use(async (environment, next) =>
+            {
+                foreach(var pair in environment.Environment)
+                {
+                    Console.WriteLine("{0}:{1}", pair.Key, pair.Value);
+                }
+                await next();
+            });
+
+            app.Use(async (environment, next) =>
+                {
+                    Console.WriteLine("Requesting : " + environment.Request.Path);
+                    await next();
+                    Console.WriteLine("Response : " + environment.Response.StatusCode);
+        });
+            app.Use<HelloWorldComponent>();
         }
     }
 
-    public class HelloWorldComponents
-    { 
-        AppFunc _next;
-        public HelloWorldComponents(AppFunc next)
+    public class HelloWorldComponent
+    {
+            AppFunc _next;
+public HelloWorldComponent(AppFunc next)
         {
             _next = next;
         }
-        public Task Invoke(IDictionary<string, object> environment)
-        
+public Task Invoke(IDictionary<string, object> environment)
         {
             var response = environment["owin.ResponseBody"] as Stream;
             using (var writer = new StreamWriter(response)) 
             {
-                return writer.WriteAsync("Hello!!");
-            };
+                return writer.WriteAsync("Hello!!!");
+            }
         }
     }
-
 }
